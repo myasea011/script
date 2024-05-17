@@ -1,0 +1,1198 @@
+print('[iHH] Script by TrungB!!')
+
+game.Players.LocalPlayer.PlayerScripts.Scripts.Core["Idle Tracking"].Enabled = false
+game.Players.LocalPlayer.PlayerScripts.Scripts.Core["Server Closing"].Enabled = false
+
+local player = game.Players.LocalPlayer
+local iHHLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/TrungB2/Skid/BestSkid/Lib/TrungBLib.lua')))()
+local Window = iHHLib:MakeWindow({Name = "[iHH] 🐾 Script 🐾 (v0.42)", HidePremium = false, SaveConfig = true, ConfigFolder = "iHHCheat"})
+local Library = require(game:GetService("ReplicatedStorage"):WaitForChild("Library", 2000))
+
+------------- Notification
+------------- Info tab
+local Info = Window:MakeTab(
+    {
+        Name = "INFOMATION",
+        Icon = "rbxassetid://7733911828",
+        PremiumOnly = false
+    })
+Info:AddParagraph("Thông tin về script", "Có cái choá gì mà xem, dùng đi rồi biết!! :) \nNếu không biết thì dùng đi là biết xD")
+Info:AddLabel("Changelogs v0.42")
+Info:AddSection({Name = "\n\n\n\n\n\n\n\n   [+] Added BoostFPS Digsite\n   [+] Added AutoFruit\n   [+] Added AutoBalloon\n   [+] Added Auto use tnt\n   [+] Fixed HiddenPresents (but still in test)\n   [+] Fixed Autocollectbag\n   [+] Added Autocraft charmstone, hugepotion\n   [+] Fixed hardstuck in bedrock when mining\n   [+] Fixed BoostFPS on fishing"})
+------------- Fast tele setup to fishing
+local FastFish = Window:MakeTab(
+    {
+        Name = "Fast Fishing",
+        Icon = "rbxassetid://7733916988",
+        PremiumOnly = false
+    })
+FastFish:AddParagraph("Thông báo nhỏ","Mày chả cần làm cái buồi gì hết, chỉ cần click vào cái nút bên dưới mọi thứ sẽ tự động cài đặt câu cá cho mày ☺")
+FastFish:AddSection({Name = "Support Advanced Fishing (Map 92)"})
+FastFish:AddButton({
+        Name = "Tele, Auto Fish, Move!",
+        Callback = function()
+            spawn(fastTeleFishArea)
+        end
+    })
+FastFish:AddSection({Name = "Support Normal Fishing (Map 27)"})
+FastFish:AddButton({
+        Name = "Tele, Auto Fish, Move!",
+        Callback = function()
+            spawn(fastTeleNorFishArea)
+        end
+    })
+FastFish:AddSection(
+    {
+        Name = "Auto Hidden Present (Still In Test)"
+    })
+local present = FastFish:AddToggle(
+    {
+        Name = "Auto Hidden Present",
+        Default = false,
+        Save = true,
+        Flag = "HiddenPresents",
+        Callback = function(v)
+            config.autoHiddenPresent = v
+            spawn(autoHiddenPresent)
+        end
+    })
+
+FastFish:AddSection(
+    {
+        Name = "Auto Advanced Fishing"
+    })
+local fish = FastFish:AddToggle(
+    {
+        Name = "Auto Fish (Advanced)",
+        Default = false,
+        Callback = function(v)
+            config.autoFish = v
+            spawn(autoFish)
+        end
+    })
+FastFish:AddSection(
+    {
+        Name = "Auto Normal Fishing"
+    })
+local norFish = FastFish:AddToggle(
+    {
+        Name = "Auto Fish (Normal)",
+        Default = false,
+        Callback = function(v)
+            config.autoFishNor = v
+            spawn(autoFishNor)
+        end
+    })
+------------- Dig tab
+local Dig = Window:MakeTab(
+    {
+        Name = "Digsite",
+        Icon = "rbxassetid://7734056878",
+        PremiumOnly = false
+    })
+Dig:AddSection(
+    {
+        Name = "Auto Digsite with antistaff system"
+    })
+local dig = Dig:AddToggle(
+    {
+        Name = "Auto Dig",
+        Default = false,
+        Callback = function(v)
+            config.autoDig = v
+            spawn(startDigging)
+        end
+    })
+local chest = Dig:AddToggle(    
+    {
+        Name = "Tp Chest",
+        Default = false,
+        Save = true,
+        Flag = "TpChest",
+        Callback = function(v)
+            config.tpChest = v
+            spawn(chestESP)
+        end
+    })
+local fpsDig = Dig:AddButton(
+    {
+        Name = "FpsBoost",
+        Callback = function()
+            spawn(fpsBoost)
+        end
+    })
+local svHop = Dig:AddToggle(
+    {
+        Name = "Serverhop when no chest left",
+        Default = false,
+        Save = true,
+        Flag = "HopWhenNoChest",
+        Callback = function(v)
+            config.autoServerhop = v
+        end
+    })
+------------- Auto tab
+local Auto = Window:MakeTab(
+    {
+        Name = "Auto",
+        Icon = "rbxassetid://7734051454",
+        PremiumOnly = false
+    })
+Auto:AddSection(
+    {
+        Name = "Auto craft with shard and magic"
+    })
+Auto:AddDropdown(
+    {
+        Name = "Pick Charm Stone Or Huge Potion",
+        Default = "Charm Stone",
+        Options = {"Charm Stone", "Huge Potion"},
+        Callback = function(v)
+            config.pickToCraft = v
+        end
+    })
+Auto:AddToggle(
+    {
+        Name = "Auto Craft",
+        Default = false,
+        Callback = function(v)
+            config.autoCraft = v
+            spawn(autoCraft)
+        end
+    })
+Auto:AddSection(
+    {
+        Name = "Auto TNT and TNT Crate every 5 seconds"
+    })
+Auto:AddDropdown(
+    {
+        Name = "Pick TNT",
+        Default = "TNT",
+        Options = {"TNT", "TNT Crate"},
+        Callback = function(v)
+            config.chooseTNT = v
+        end
+    })
+Auto:AddToggle(
+    {
+        Name = "Auto TNT",
+        Default = false,
+        Callback = function(v)
+            config.autoTNT = v
+            spawn(autoTNT)
+        end
+    })
+Auto:AddSection(
+    {
+        Name = "Open Bundle Gift Bag"
+    })
+Auto:AddDropdown(
+    {
+        Name = "Pick Bundle, Charm Stone, Gift",
+        Default = "Charm Stone",
+        Options = {"Charm Stone", "Enchant Bundle", "Flag Bundle", "Potion Bundle", "Toy Bundle", "Gift Bag", "Large Gift Bag"},
+        Callback = function(v)
+            config.bundleGiftBag = v
+        end
+    })
+Auto:AddToggle(
+    {
+        Name = "Auto Bundle",
+        Default = false,
+        Callback = function(v)
+            config.autoBundleGiftBag = v
+            spawn(autoBundle)
+        end
+    })
+------------- Farming tab
+local Farm = Window:MakeTab(
+    {
+        Name = "Farming",
+        Icon = "rbxassetid://7743866529",
+        PremiumOnly = false
+    })
+Farm:AddSection(
+    {
+        Name = "Farming method"
+    })
+Farm:AddToggle(
+    {
+        Name = "Auto Balloon",
+        Default = false,
+        Save = true,
+        Flag = "AutoBalloon",
+        Callback = function(v)
+            config.autoBalloon = v
+            spawn(autoBalloon)
+        end
+    })
+Farm:AddToggle(
+    {
+        Name = "Auto Tap",
+        Default = false,
+        Save = true,
+        Flag = "AutoTap",
+        Callback = function(v)
+            config.autoTap = v
+            spawn(autoTap)
+        end
+    })
+Farm:AddToggle(
+    {
+        Name = "Auto Fruit",
+        Default = false,
+        Callback = function(v)
+            config.autoFruit = v
+            spawn(autoFruits)
+        end
+    })
+Farm:AddToggle(
+    {
+        Name = "Auto Claim Reward",
+        Default = false,
+        Callback = function(v)
+            config.autoClaimReward = v
+            spawn(autoClaimReward)
+        end
+    })
+Farm:AddToggle(
+    {
+        Name = "Auto Collect Bag",
+        Default = false,
+        Save = true,
+        Flag = "AutoCollectBag",
+        Callback = function(v)
+            config.autoCollectBag = v
+            spawn(autoCollectBag)
+        end
+    })
+
+------------- Mail tab
+local Mail = Window:MakeTab(
+    {
+        Name = "Mail",
+        Icon = "rbxassetid://7733992732",
+        PremiumOnly = false
+    })
+Mail:AddSection(
+    {
+        Name = "Auto Claim Mail"
+    })
+
+Mail:AddToggle(
+    {
+        Name = "Auto Claim Mail",
+        Default = false,
+        Callback = function(v)
+            config.autoClaimMail = v
+            spawn(autoClaimMail)
+        end
+    })
+
+Mail:AddSection(
+    {
+        Name = "Auto Send Mail"
+    })
+Mail:AddButton(
+    {
+        Name = "Auto Send Mail",
+        Callback = function()
+            spawn(autoSendMail)
+        end
+    })
+Mail:AddSection(
+    {
+        Name = "Select items to send"
+    })
+local diamonds = Mail:AddToggle(
+    {
+        Name = "Diamonds",
+        Default = false,
+        Save = true,
+        Flag = "SendDiamonds",
+        Callback = function(v)
+            config.sendGems = v
+        end
+    })
+local magicShards = Mail:AddToggle(
+    {
+        Name = "Magic Shards",
+        Default = false,
+        Save = true,
+        Flag = "SendShards",
+        Callback = function(v)
+            config.sendShards = v
+        end
+    })
+local bucketomagic = Mail:AddToggle(
+    {
+        Name = "Bucket O' Magic (50)",
+        Default = false,
+        Save = true,
+        Flag = "SendMagicBucket",
+        Callback = function(v)
+            config.bucketMagic = v
+        end
+    })
+local charmStone = Mail:AddToggle(
+    {
+        Name = "Charm Stone (10)",
+        Default = false,
+        Save = true,
+        Flag = "SendCharm",
+        Callback = function(v)
+            config.sendCharm = v
+        end
+    })
+local giftBag = Mail:AddToggle(
+    {
+        Name = "Gift Bag (15)",
+        Default = false,
+        Save = true,
+        Flag = "SendGift",
+        Callback = function(v)
+            config.sendGift = v
+        end
+    })
+local largeGiftBag = Mail:AddToggle(
+    {
+        Name = "Large Gift Bag (5)",
+        Default = false,
+        Save = true,
+        Flag = "SendLargeGift",
+        Callback = function(v)
+            config.sendLargeGift = v
+        end
+    })
+
+local hugePoseidon = Mail:AddToggle(
+    {
+        Name = "Huge Poseidon Corgi (1)",
+        Default = false,
+        Save = true,
+        Flag = "SendHuge",
+        Callback = function(v)
+            config.sendHuge = v
+        end
+    })
+local luckyblock = Mail:AddToggle(
+    {
+        Name = "Lucky Block (5)",
+        Default = false,
+        Save = true,
+        Flag = "SendLucky",
+        Callback = function(v)
+            config.sendLuckyBLock = v
+        end
+    })
+local pinata = Mail:AddToggle(
+    {
+        Name = "Pinata (5)",
+        Default = false,
+        Save = true,
+        Flag = "SendPinata",
+        Callback = function(v)
+            config.sendPinata = v
+        end
+    })
+------------- Mics
+local Mics = Window:MakeTab(
+    {
+        Name = "Mics",
+        Icon = "rbxassetid://7734053495",
+        PremiumOnly = false
+    })
+
+Mics:AddSection(
+    {
+        Name = "Setup your game with Low CPU and auto antiAFK"
+    })
+--[[Mics:AddButton(
+    {
+        Name = "Boost FPS",
+        Callback = function()
+            spawn(boostFPS)
+        end
+    })]]
+Mics:AddButton(
+    {
+        Name = "CPU Reducer",
+        Callback = function()
+            spawn(reduceCPU)
+        end
+    })
+Mics:AddSection(
+    {
+        Name = "Destroy the UI"
+    })
+Mics:AddButton(
+    {
+        Name = "DestroyUI",
+        Callback = function()
+            iHHLib:Destroy()
+        end
+    })
+Mics:AddButton(
+    {
+        Name = "Rejoin Server",
+        Callback = function()
+            game:GetService("TeleportService"):Teleport(game.PlaceId, game:GetService("Players").LocalPlayer)
+        end
+    })
+Mics:AddButton(
+    {
+        Name = "ServerHop",
+        Callback = function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/TrungB2/Skid/main/serverhop.lua"))()
+        end
+    })
+iHHLib:Init()
+-- Auto Fruit (Working)
+function autoFruits()
+    local saveModule = require(game:GetService("ReplicatedStorage").Library.Client.Save)
+    local result = saveModule.Get()
+    local fruits = result.Inventory.Fruit
+
+    local fruitTypes = {{"Banana"}, {"Pineapple"}, {"Apple"}, {"Rainbow"}, {"Orange"},}
+
+    while wait() and config.autoFruit do
+        for i, v in pairs(fruits) do
+            local args = {i, 20}
+            local consumed = false
+
+            for _, chooseTable in ipairs(fruitTypes) do
+                if table.find(chooseTable, v.id) then
+                    game:GetService("ReplicatedStorage").Network:FindFirstChild("Fruits: Consume"):FireServer(unpack(args))
+                    consumed = true
+                end
+            end
+            wait(0.5)
+        end
+    end
+end
+-- Low CPU
+function fishingUltraFpsBoost()
+    loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/8d2c3244d2b5cf8794e35145358783f2.lua"))()
+end
+function boostFPS()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/TrungB2/Skid/BestSkid/ReduceLag/lowmap.lua"))()
+end
+function reduceCPU()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/TrungB2/Skid/BestSkid/ReduceLag/lowCPU.lua"))()
+end
+-- Auto Fishing
+-- Fast tele fishing
+function fastTeleFishArea()
+    game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart").CFrame = game:GetService("Workspace").__THINGS.Instances.AdvancedFishing.Teleports.Enter.CFrame
+    wait(3)
+    --present:Set(true)
+    fish:Set(true)
+    wait(2)
+    spawn(moveToFishingDerec)
+    spawn(fishingUltraFpsBoost)
+end
+function fastTeleNorFishArea()
+    game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart").CFrame = game:GetService("Workspace").__THINGS.Instances.Fishing.Teleports.Enter.CFrame
+    wait(3)
+    --present:Set(true)
+    norFish:Set(true)
+    wait(2)
+    spawn(reduceCPU)
+    spawn(moveToFishingDerec)
+end
+function moveToFishingDerec()
+    local x = math.random(10, 20)
+    local z = math.random(1, 5)
+    if config.autoFish then
+        game.Players.LocalPlayer.Character.Humanoid:MoveTo(Vector3.new(1449.8734130859375 + x, 66.07669830322266, -4451.63720703125 + z))
+    elseif config.autoFishNor then
+        game.Players.LocalPlayer.Character.Humanoid:MoveTo(Vector3.new(1124.83521 + x, 75.4893112, -3454.31177 + z))
+    end
+end
+-- Auto Fishing
+function autoFishNor()
+    if not game:GetService("Workspace").__THINGS.__INSTANCE_CONTAINER.Active:FindFirstChild("Fishing") then
+        game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart").CFrame = game:GetService("Workspace").__THINGS.Instances.Fishing.Teleports.Enter.CFrame
+        task.wait(1)
+    end
+
+    while task.wait() and config.autoFishNor do
+        local x = math.random(1, 50)
+        local z = math.random(1, 20)
+
+        local argsCast = {
+            [1] = "Fishing",
+            [2] = "RequestCast",
+            [3] = Vector3.new(1149.94775390625, 75.91414642333984, -3460.374755859375) + Vector3.new(x, 0, z)
+        }
+
+        game:GetService("ReplicatedStorage").Network.Instancing_FireCustomFromClient:FireServer(unpack(argsCast))
+        task.wait(2.5)
+
+        local argsReel = {
+            [1] = "Fishing",
+            [2] = "RequestReel"
+        }
+        game:GetService("ReplicatedStorage").Network.Instancing_FireCustomFromClient:FireServer(unpack(argsReel))
+
+        repeat
+            task.wait()
+
+            local hasFishingLine = false
+            for _, descendant in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+                if descendant.Name == "FishingLine" then
+                    hasFishingLine = true
+                    break
+                end
+            end
+            
+            game:GetService("ReplicatedStorage").Network.Instancing_FireCustomFromClient:FireServer(unpack(argsReel))
+            if not hasFishingLine then
+                break
+            end
+
+            local argsClicked = {
+                [1] = "Fishing",
+                [2] = "Clicked"
+            }
+
+            game:GetService("ReplicatedStorage").Network.Instancing_InvokeCustomFromClient:InvokeServer(unpack(argsClicked))
+        until not hasFishingLine
+        task.wait()
+    end
+end
+function autoFish()
+    while task.wait() and config.autoFish do
+        local x = math.random(1, 50)
+        local z = math.random(1, 50)
+
+        local argsCast = {
+            [1] = "AdvancedFishing",
+            [2] = "RequestCast",
+            [3] = Vector3.new(1465.877685546875, 61.62495040893555, -4455.58447265625) + Vector3.new(x, 0, z)
+        }
+
+        game:GetService("ReplicatedStorage").Network.Instancing_FireCustomFromClient:FireServer(unpack(argsCast))
+        task.wait(2.5)
+
+        local argsReel = {
+            [1] = "AdvancedFishing",
+            [2] = "RequestReel"
+        }
+        game:GetService("ReplicatedStorage").Network.Instancing_FireCustomFromClient:FireServer(unpack(argsReel))
+
+        repeat
+            task.wait()
+
+            local hasFishingLine = false
+            for _, descendant in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+                if descendant.Name == "FishingLine" then
+                    hasFishingLine = true
+                    break
+                end
+            end
+            
+            game:GetService("ReplicatedStorage").Network.Instancing_FireCustomFromClient:FireServer(unpack(argsReel))
+            if not hasFishingLine then
+                break
+            end
+
+            local argsClicked = {
+                [1] = "AdvancedFishing",
+                [2] = "Clicked"
+            }
+
+            game:GetService("ReplicatedStorage").Network.Instancing_InvokeCustomFromClient:InvokeServer(unpack(argsClicked))
+        until not hasFishingLine
+        task.wait()
+    end
+end
+-- Auto Balloon
+function autoBalloon()
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+    local hrp = player.Character.HumanoidRootPart
+    local fpsboost = true
+    
+    while wait() and getgenv().config.autoBalloon do
+
+
+        local balloonIds = {}
+        local getActiveBalloons = ReplicatedStorage.Network.BalloonGifts_GetActiveBalloons:InvokeServer()
+
+        local allPopped = true
+        for i, v in pairs(getActiveBalloons) do
+            if not v.Popped then
+                allPopped = false
+                balloonIds[i] = v
+            end
+        end
+
+        if allPopped then
+            if getgenv().hopWhenNoBalloon then
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/fdvll/pet-simulator-99/main/serverhop.lua"))()
+            end
+            task.wait(1)
+            continue
+        end
+
+        if not getgenv().config.autoBalloon then
+            break
+        end
+
+        local originalPosition = hrp.CFrame
+
+        hrp.Anchored = true
+        for balloonId, balloonData in pairs(balloonIds) do
+            local balloonPosition = balloonData.Position
+
+            ReplicatedStorage.Network.Slingshot_Toggle:InvokeServer()
+
+            wait()
+
+            hrp.CFrame = CFrame.new(balloonPosition.X, balloonPosition.Y + 30, balloonPosition.Z)
+
+            task.wait()
+
+            local args = {
+                [1] = Vector3.new(balloonPosition.X, balloonPosition.Y + 25, balloonPosition.Z),
+                [2] = 0.5794160315249014,
+                [3] = -0.8331117721691044,
+                [4] = 200
+            }
+
+            ReplicatedStorage.Network.Slingshot_FireProjectile:InvokeServer(unpack(args))
+
+            wait(0.1)
+
+            local args = {
+                [1] = balloonId
+            }
+
+            ReplicatedStorage.Network.BalloonGifts_BalloonHit:FireServer(unpack(args))
+
+            task.wait()
+
+            ReplicatedStorage.Network.Slingshot_Unequip:InvokeServer()
+            task.wait()
+            hrp.Anchored = false
+            wait(1)
+            
+            hrp.Anchored = true
+            task.wait(0.2)
+            
+            if fpsboost == getgenv().config.balloonFpsBoost then
+                print("Staring FPSBoost!")
+                loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/55e60b3ea5cb4a084c97813878b579cd.lua"))()
+                fpsboost = false
+                print("Done!")
+            end
+        end
+
+        if getgenv().config.hopWhenNoBalloon then
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/TrungB2/Skid/BestSkid/Misc/serverhop.lua"))()
+        end
+        
+        hrp.Anchored = false
+        hrp.CFrame = originalPosition
+    end
+    hrp.Anchored = false
+end
+-- Auto Craft
+function autoCraft()
+    while wait() and config.autoCraft do
+        game:GetService("ReplicatedStorage").Network.MagicMachine_Activate:InvokeServer(config.pickToCraft)
+    end
+end
+-- Auto Tap
+function autoTap()
+    local Library = require(game:GetService("ReplicatedStorage").Library)
+    local Network = Library.Network
+    local GetNearestBreakable = getsenv(game:GetService("Players").LocalPlayer.PlayerScripts.Scripts.GUIs["Auto Tapper"]).GetNearestBreakable
+
+    while wait() and config.autoTap do
+        pcall(function()
+            local Breakable = GetNearestBreakable()
+            if Breakable then
+                Network.Fire("Breakables_PlayerDealDamage", Breakable.Name)
+            end
+        end)
+    end
+end
+-- Auto tnt
+function autoTNT()
+    while wait() and config.autoTNT do
+        if config.chooseTNT == "TNT" then
+            game:GetService("ReplicatedStorage").Network.TNT_Consume:InvokeServer()
+        elseif config.chooseTNT == "TNT Crate" then
+            game:GetService("ReplicatedStorage").Network.TNT_Crate_Consume:InvokeServer()
+        end
+        task.wait(5)
+    end
+end
+-- Auto Bundle Gift Bag
+function autoBundle()
+    while task.wait() and config.autoBundleGiftBag do
+        game:GetService("ReplicatedStorage").Network.GiftBag_Open:InvokeServer(unpack({[1] = config.bundleGiftBag}))
+    end
+end
+-- Auto Free Gift
+function autoClaimReward()
+    while task.wait() and config.autoClaimReward do
+        for i = 1, 12 do
+            local args = {i}
+            game:GetService("ReplicatedStorage"):WaitForChild("Network"):WaitForChild("Redeem Free Gift"):InvokeServer(unpack(args))
+            wait(1)
+        end
+    end
+end
+-- Auto  Collect
+function autoCollectBag()
+    while wait() and config.autoCollectBag do
+        -- Coins
+        for i, orb in pairs(game.workspace['__THINGS'].Orbs:GetChildren()) do
+            if orb:IsA("Part") then
+                game:GetService("ReplicatedStorage"):WaitForChild("Network"):WaitForChild("Orbs: Collect"):FireServer(unpack({[1] = {[1] = tonumber(orb.Name)}}))
+                orb.CFrame = player.Character.HumanoidRootPart.CFrame
+                orb:Destroy()
+                task.wait()
+            end
+        end
+        
+        -- LootBags
+        for i, lootbag in pairs(game:GetService("Workspace")["__THINGS"].Lootbags:GetChildren()) do
+            if lootbag:IsA("MeshPart") then
+                lootbag.CFrame = player.Character.HumanoidRootPart.CFrame
+            end
+            game:GetService("ReplicatedStorage").Network:WaitForChild("Lootbags_Claim"):FireServer(unpack( { [1] = { [1] = lootbag.Name, }, } ))
+            task.wait()
+            lootbag:Destroy()
+        end
+        wait(0.5)
+    end
+end
+-- Auto Present
+function autoHiddenPresent()
+    while wait() and config.autoHiddenPresent do
+        local save = require(game:GetService("ReplicatedStorage").Library.Client.Save)
+        local result = save.Get()
+        local present = result.HiddenPresents
+        for i, v in pairs(present) do
+            local args = {
+                [1] = v.ID
+            }
+            game:GetService("ReplicatedStorage"):WaitForChild("Network"):WaitForChild("Hidden Presents: Found"):InvokeServer(unpack(args))
+            wait(1.5)
+        end
+    end
+end
+-- Anti AFk
+function antiAFK()
+    local VirtualInputManager = game:GetService("VirtualInputManager")
+    while task.wait() do
+        VirtualInputManager:SendKeyEvent(true, "Space", false, game)
+        task.wait(.2)
+        VirtualInputManager:SendKeyEvent(false, "Space", false, game)
+        task.wait(300)
+    end
+end
+-- Auto Claim Mail
+function autoClaimMail()
+    while wait() and config.autoClaimMail do
+        game:GetService("ReplicatedStorage"):WaitForChild("Network"):WaitForChild("Mailbox: Claim All"):InvokeServer()
+    end
+end
+-- Auto Send Mail
+function autoSendMail()
+    local saveModule = require(game:GetService("ReplicatedStorage").Library.Client.Save)
+    local result = saveModule.Get()
+
+    local ms = result.Inventory.Misc 
+    for i, v in pairs(ms) do
+        if v.id == "Magic Shard" and config.sendShards then
+            if v._am >= config.minShards then
+                local magicshard = {
+                    [1] = config.userToMail,
+                    [2] = "",
+                    [3] = "Misc",
+                    [4] = i,
+                    [5] = v._am
+                }
+                game:GetService("ReplicatedStorage").Network:FindFirstChild("Mailbox: Send"):InvokeServer(unpack(magicshard))
+                iHHLib:MakeNotification({
+                    Name = "[iHH] Mail Send!",
+                    Content = "Sended "..v._am.." shards",
+                    Image = "rbxassetid://4483345998",
+                    Time = 5
+                })
+            end
+        end
+        if v.id == "Charm Stone" and config.sendCharm then
+            if v._am >= 10 then
+                local charm = {
+                    [1] = config.userToMail,
+                    [2] = "",
+                    [3] = "Misc",
+                    [4] = i,
+                    [5] = v._am
+                }
+                game:GetService("ReplicatedStorage").Network:FindFirstChild("Mailbox: Send"):InvokeServer(unpack(charm))
+                iHHLib:MakeNotification({
+                    Name = "[iHH] Mail Send!",
+                    Content = "Sended "..v._am.." Charm Stone",
+                    Image = "rbxassetid://4483345998",
+                    Time = 5
+                })
+            end
+        end
+        if v.id == "Gift Bag" and config.sendGift then
+            if v._am >= 15 then
+                local giftbag = {
+                    [1] = config.userToMail,
+                    [2] = "",
+                    [3] = "Misc",
+                    [4] = i,
+                    [5] = v._am
+                }
+                game:GetService("ReplicatedStorage").Network:FindFirstChild("Mailbox: Send"):InvokeServer(unpack(giftbag))
+                iHHLib:MakeNotification({
+                    Name = "[iHH] Mail Send!",
+                    Content = "Sended "..v._am.." Gift Bag",
+                    Image = "rbxassetid://4483345998",
+                    Time = 5
+                })
+            end
+        end
+        if v.id == "Large Gift Bag" and config.sendLargeGift then
+            if v._am >= 5 then
+                local largegift = {
+                    [1] = config.userToMail,
+                    [2] = "",
+                    [3] = "Misc",
+                    [4] = i,
+                    [5] = v._am
+                }
+                game:GetService("ReplicatedStorage").Network:FindFirstChild("Mailbox: Send"):InvokeServer(unpack(largegift))
+                iHHLib:MakeNotification({
+                    Name = "[iHH] Mail Send!",
+                    Content = "Sended "..v._am.." Large Gift Bag",
+                    Image = "rbxassetid://4483345998",
+                    Time = 5
+                })
+            end
+        end
+        if v.id == "Mini Lucky Block" and config.sendLuckyBLock then
+            if v._am >= 5 then
+                local luckyblock = {
+                    [1] = config.userToMail,
+                    [2] = "",
+                    [3] = "Misc",
+                    [4] = i,
+                    [5] = v._am
+                }
+                game:GetService("ReplicatedStorage").Network:FindFirstChild("Mailbox: Send"):InvokeServer(unpack(luckyblock))
+                iHHLib:MakeNotification({
+                    Name = "[iHH] Mail Send!",
+                    Content = "Sended "..v._am.." Lucky Block",
+                    Image = "rbxassetid://4483345998",
+                    Time = 5
+                })
+            end
+        end
+        if v.id == "Mini Pinata" and config.sendPinata then
+            if v._am >= 5 then
+                local pinata = {
+                    [1] = config.userToMail,
+                    [2] = "",
+                    [3] = "Misc",
+                    [4] = i,
+                    [5] = v._am
+                }
+                game:GetService("ReplicatedStorage").Network:FindFirstChild("Mailbox: Send"):InvokeServer(unpack(pinata))
+                print("Sended Pinata!")
+            end
+        end
+        if v.id == "Bucket O' Magic" and config.bucketMagic then
+            if v._am >= 50 then
+                local bucket = {
+                    [1] = config.userToMail,
+                    [2] = "",
+                    [3] = "Misc",
+                    [4] = i,
+                    [5] = v._am
+                }
+                game:GetService("ReplicatedStorage").Network:FindFirstChild("Mailbox: Send"):InvokeServer(unpack(bucket))
+                iHHLib:MakeNotification({
+                    Name = "[iHH] Mail Send!",
+                    Content = "Sended "..v._am.." Bucket O' Magic",
+                    Image = "rbxassetid://4483345998",
+                    Time = 5
+                })
+            end
+        end
+
+    end
+
+    task.wait(0.2)
+
+    local pet = result.Inventory.Pet
+    for i, v in pairs(pet) do
+        if config.sendHuge then
+            if v.id == "Huge Poseidon Corgi" or v.id == "Huge Fossil Dragon" or v.id =="Huge Happy Computer" then
+                local huge = {
+                    [1] = config.userToMail,
+                    [2] = "",
+                    [3] = "Pet",
+                    [4] = i,
+                    [5] = 1
+                }
+                game:GetService("ReplicatedStorage").Network:FindFirstChild("Mailbox: Send"):InvokeServer(unpack(huge))
+                iHHLib:MakeNotification({
+                    Name = "[iHH] Mail Send!",
+                    Content = "Huge Sended!",
+                    Image = "rbxassetid://4483345998",
+                    Time = 5
+                })
+            end
+        end
+    end
+    task.wait(0.2)
+
+    local GetSave = function()
+        return require(game.ReplicatedStorage.Library.Client.Save).Get()
+    end
+    for i, v in pairs(GetSave().Inventory.Currency) do
+        if v.id == "Diamonds" and config.sendGems then
+            if v._am >= config.gemAmount then
+                local diamonds = {
+                    [1] = config.userToMail,
+                    [2] = "",
+                    [3] = "Currency",
+                    [4] = i,
+                    [5] = v._am - 30000
+                }
+                game:GetService("ReplicatedStorage"):WaitForChild("Network"):WaitForChild("Mailbox: Send"):InvokeServer(unpack(diamonds)) -- 30k = 10k mail + 20k keep
+                iHHLib:MakeNotification({
+                    Name = "[iHH] Mail Send!",
+                    Content = "Sended "..v._am.." gems",
+                    Image = "rbxassetid://4483345998",
+                    Time = 5
+                })
+            end
+        end
+        task.wait(0.2)
+    end
+end
+-- Auto Dig
+function chestESP()
+    if not game:GetService("Workspace").__THINGS.__INSTANCE_CONTAINER.Active:FindFirstChild("AdvancedDigsite") then    
+    else
+        chestsn = {"Animated",}
+        local function contains(table, val)
+            for i=1,#table do
+                if table[i] == val then return true end
+            end
+            return false
+        end
+        while task.wait(0.1) and config.tpChest do
+            for __,v in pairs(game.Workspace["__THINGS"].__INSTANCE_CONTAINER.Active.AdvancedDigsite.Important.ActiveChests:GetChildren()) do
+                if v:FindFirstChild("ESP") then v:FindFirstChild("ESP"):Destroy() end
+                if contains(chestsn, v.Name) then
+                    if v.Name == "Animated" then
+                        tcolor = Color3.fromRGB(222, 184, 135)
+                    end
+            
+                    local a = Instance.new("BillboardGui",v)
+                    a.Name = "ESP"
+                    a.Size = UDim2.new(5,0, 5,0)
+                    a.AlwaysOnTop = true
+                    local b = Instance.new("Frame",a)
+                    b.Size = UDim2.new(1,0, 1,0)
+                    b.BackgroundTransparency = 0.50
+                    b.BorderSizePixel = 0
+                    b.BackgroundColor3 = tcolor
+                    local c = Instance.new('TextLabel',b)
+                    c.Size = UDim2.new(1,0,1,1)
+                    c.BorderSizePixel = 0
+                    c.TextSize = 17
+                    c.Text = "Chest"
+                    c.BackgroundTransparency = 1
+                    c.TextColor3 = tcolor
+                    c.TextStrokeColor3 = Color3.fromRGB(6, 6, 6)
+                    c.TextStrokeTransparency = 0.7
+                end
+            end
+        end
+    end
+end
+function fpsBoost()
+    local activeMap = game:GetService("Workspace")["__THINGS"]["__INSTANCE_CONTAINER"].Active.AdvancedDigsite
+    
+    if not game:GetService("Workspace").__THINGS.__INSTANCE_CONTAINER.Active:FindFirstChild("AdvancedDigsite") then end
+    
+    wait(3)
+    -- BoostFPS
+    for _, v in pairs(game:GetService("Workspace")["__THINGS"].Instances.AdvancedDigsite.Teleports:GetChildren()) do
+        if v.Name == "Leave" then
+            v:Destroy()
+        end
+    end
+
+    wait(2)
+    for _, ground in pairs(activeMap:GetChildren()) do
+        for _, merchant in pairs(activeMap.Important:GetChildren()) do
+            if merchant.Name == "Merchant" then
+                merchant:Destroy()
+            end
+            if ground:IsA('Part') and ground.Name == "Ground" then
+                ground.Transparency = 1
+            end
+        end
+    end
+    for _, v in pairs(activeMap.Map:GetDescendants()) do
+        v:Destroy()
+    end
+    
+    local Gui = game:GetService("Players").LocalPlayer.PlayerGui
+    local GuiLeft = Gui.MainLeft.Left.Currency
+    for _, gui in pairs(Gui:GetDescendants()) do
+        if gui.Name == "GoalsSide" then
+            gui:Destroy()
+        end
+    end
+    wait(2)
+    spawn(boostFPS)
+    wait(2)
+    game:GetService("RunService"):Set3dRenderingEnabled(false)
+end
+local function findChest()
+    local dist = 9999
+    local chest = nil
+    for _, v in pairs(game:GetService("Workspace").__THINGS.__INSTANCE_CONTAINER.Active.AdvancedDigsite.Important.ActiveChests:GetChildren()) do
+        if v:IsA("Model") then
+            local magnitude = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - v.Top.Position).Magnitude
+            if magnitude <= dist then
+                dist = magnitude
+                chest = v
+            end
+        end
+    end
+    return chest
+end
+local function findMagicBlock()
+    local dist = 9999
+    local magicBlock = nil
+    local playerPosition = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
+    for _, v in pairs(game.Workspace["__THINGS"].__INSTANCE_CONTAINER.Active.AdvancedDigsite.Important.ActiveBlocks:GetChildren()) do
+        for _, part in pairs(v:GetChildren()) do
+            if part.Name == "sparkles" then
+                if v:IsA("BasePart") then
+                    local magnitude = (playerPosition - v.Position).Magnitude
+                    if magnitude <= dist and playerPosition.Y > v.Position.Y then
+                        dist = magnitude
+                        magicBlock = v.CFrame -- Change here to store the CFrame of the magic block
+                    end
+                end
+            end
+        end
+    end
+
+    return magicBlock
+end
+local function findBlock()
+    local dist = 9999
+    local block = nil
+    local playerPosition = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
+    
+    for _, v in pairs(game:GetService("Workspace").__THINGS.__INSTANCE_CONTAINER.Active.AdvancedDigsite.Important.ActiveBlocks:GetChildren()) do
+        if v.BrickColor == "Really black" then end
+        if v:IsA("BasePart") then
+            local magnitude = (playerPosition - v.Position).Magnitude
+            if magnitude <= dist and playerPosition.Y > v.Position.Y then
+                dist = magnitude
+                block = v
+            end
+        end
+    end
+    
+    return block
+end
+function startDigging()
+    
+    -- Staring digging
+    local foundSparkles = false
+    while task.wait(0.2) and config.autoDig do
+        if not game:GetService("Workspace").__THINGS.__INSTANCE_CONTAINER.Active:FindFirstChild("AdvancedDigsite") then
+            game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart").CFrame = game:GetService("Workspace").__THINGS.Instances.AdvancedDigsite.Teleports.Enter.CFrame
+            local loaded = false
+    
+            task.spawn(function()
+                task.wait(10)
+                if not loaded and autoServerhop then
+                    task.wait(5)
+                    loadstring(game:HttpGet("https://raw.githubusercontent.com/fdvll/pet-simulator-99/main/serverhop.lua"))()
+                end
+            end)
+    
+            local detectLoad = game:GetService("Workspace").__THINGS.__INSTANCE_CONTAINER.Active.ChildAdded:Connect(function(child)
+                if child.Name == "AdvancedDigsite" then
+                    loaded = true
+                end
+            end)
+    
+            repeat
+                task.wait()
+            until loaded
+    
+            detectLoad:Disconnect()
+            task.wait(1)
+        end
+
+        local block = findBlock()
+        local chest = findChest()
+        local magicBlockCFrame = findMagicBlock()
+
+        if not chest then 
+            if config.autoServerhop then
+                if (os.clock() - os.clock() > 20) then -- Server hop if no chest is found for this many seconds
+                    task.wait(5) -- Delay before server hops
+                    loadstring(game:HttpGet("https://raw.githubusercontent.com/TrungB2/Skid/main/serverhop.lua"))()
+                end
+            end
+        else
+        end
+
+        if chest and config.tpChest then
+            game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart").CFrame = chest.Top.CFrame
+            game:GetService("ReplicatedStorage").Network:WaitForChild("Instancing_FireCustomFromClient"):FireServer("AdvancedDigsite", "DigChest", chest:GetAttribute('Coord'))
+            wait(0.2)
+        elseif block and magicBlockCFrame ~= nil then
+            game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart").CFrame = magicBlockCFrame
+            game:GetService("ReplicatedStorage").Network:WaitForChild("Instancing_FireCustomFromClient"):FireServer("AdvancedDigsite", "DigBlock", block:GetAttribute('Coord'))
+            foundSparkles = true
+            task.wait(0.001)
+        elseif block then
+            if foundSparkles == true then
+                game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart").CFrame = game:GetService("Workspace")["__THINGS"]["__INSTANCE_CONTAINER"].Active.AdvancedDigsite.Important.TunnelTop.CFrame
+                print('[iHH] tp on top')
+                foundSparkles = false
+                task.wait(1)
+            else
+                local tunnelTopCFrame = game:GetService("Workspace")["__THINGS"]["__INSTANCE_CONTAINER"].Active.AdvancedDigsite.Important.TunnelTop.CFrame
+                local blockPosition = block.Position
+                -- Check if bedrock below the player then tp out
+                if block.BrickColor == BrickColor.new("Really black") and game.Players.LocalPlayer.Character.HumanoidRootPart.Position.Y > blockPosition.Y then
+                    game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart").CFrame = tunnelTopCFrame
+                    print('[iHH] Teleported to TunnelTop')
+                else
+                    game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart").CFrame = CFrame.new(block.Position + Vector3.new(0, 4, 0))
+                    game:GetService("ReplicatedStorage").Network:WaitForChild("Instancing_FireCustomFromClient"):FireServer("AdvancedDigsite", "DigBlock", block:GetAttribute('Coord'))
+                    task.wait(0.001)
+                end
+            end
+        
+        end
+        task.wait(0.01)
+    end
+end
+
+spawn(antiAFK)
